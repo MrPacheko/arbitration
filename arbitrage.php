@@ -39,8 +39,5 @@ $arbit->add_exchange($exch_1);
 $arbit->add_exchange($exch_2);
 $arbit->add_exchange($exch_3);
 
-//Test max_profit computing
-/*while(true){
-    $arbit->max_profitable_operation();
-}*/
+//Test max profit operation
 $arbit->max_profitable_operation();
