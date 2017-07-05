@@ -1,4 +1,4 @@
-# arbitration
+# Arbitration
 Crypto Currency Exchange Arbitration Project
 
 Ce document détaille la méthode d’arbitrage des différentes plateformes d’échange de crypto monnaies, comme Bitfinex, Poloniex ou Bittrex. L’arbitrage consiste à exploiter les différences de cours sur ces trois plateformes. Prenons un exemple concret : 
