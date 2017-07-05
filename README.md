@@ -42,3 +42,6 @@ Pour modéliser ce problème, on se donne différentes grandeurs utiles :
 </p>
 
 Remarque : ces valeurs peuvent différer entre les plateformes A et B.
+
+
+A TERMINER
