@@ -60,7 +60,7 @@ class Arbitration_usdtbtc
         $prix_ordre_achat,
         $benefice,
         $timestamp,
-        $date){
+        $marge){
         //Appel a la bdd
         $bdd = $this->appel_bdd();
 
@@ -73,7 +73,7 @@ class Arbitration_usdtbtc
         prix_ordre_achat, 
         benefice, 
         timestamp, 
-        date
+        marge
         ) VALUES(
         :plateforme_achat, 
         :plateforme_vente, 
@@ -83,7 +83,7 @@ class Arbitration_usdtbtc
         :prix_ordre_achat, 
         :benefice, 
         :timestamp, 
-        :date
+        :marge
         )');
         $req->execute(array(
             'plateforme_achat'=>$plateforme_achat,
@@ -94,7 +94,7 @@ class Arbitration_usdtbtc
             'prix_ordre_achat'=>$prix_ordre_achat, 
             'benefice'=>$benefice, 
             'timestamp'=>$timestamp, 
-            'date'=>$date
+            'marge'=>$marge
         ));
     }
     
@@ -157,8 +157,15 @@ class Arbitration_usdtbtc
         //Checking date last operation
         if($this->get_date_last_operation()==0){
             //Updating order books of exchanges
+            //$date_m = microtime(true);
             $OB = $this->get_order_books_usdtbtc();
             
+            //Display getiing information time
+            /*$date_m2 = microtime(true);
+            $delta_m2 = $date_m2 - $date_m;
+            echo 'time_1 = ';
+            echo $delta_m2;
+            echo '<br>';*/
             //Display the crossed order book matrix
             //$this->compute_delta_p_matrix($OB);
             
@@ -193,7 +200,12 @@ class Arbitration_usdtbtc
             }
 
             //Print best operation
-            $this->print_best_operations($best_operation,$best_action,$best_i,$best_j);
+            if($best_profit>0){
+                $this->print_best_operations($best_operation,$best_action,$best_i,$best_j);    
+            }
+            else{
+                echo 'NO INTERESTING ACTION';
+            }
 
             //Trigger operation lauch if it meets the minimum profit and minimum security margin criterias
             if ($best_profit>$this->get_trigger_profit() and $best_operation["security_marge"]>$this->get_trigger_marge_security()){
@@ -210,12 +222,18 @@ class Arbitration_usdtbtc
                     $best_operation["operations"][$best_action]["buy_price"],
                     $best_operation["operations"][$best_action]["cumul_profit"],
                     $timestamp,
-                    $date
+                    $best_operation["security_marge"]
                 );
                 
                 //Set date last operation (only to simulate transfert time)
                 //$this->set_date_last_operation(time());
             }
+            //Display computing time
+            /*$date_m3 = microtime(true);
+            $delta_m3 = $date_m3 - $date_m2;
+            echo '<br>time_2 = ';
+            echo $delta_m3;
+            echo '<br>';*/
         }
     }
     
@@ -282,7 +300,7 @@ class Arbitration_usdtbtc
             //    - $q_max == 0 => no more btc to sell available => break
             //    - $q_alpha = $q_achat_btc => the $i order is covered, have to move to the $i+1 order, subtract the $q_alpha quantity to the $j order
             //    - $q_alpha = $q_vente_btc => the $j order is covered, have to move to the $j+1 order, subtract the $q_alpha quantity to the $i order
-            if($q_alpha == $q_max){
+            if($q_alpha == $q_max or $i>=count($quantities_prices_achat)-1 or $j>=count($quantities_prices_vente)-1){
                 //Subtract the last operation btc quantity to the max btc quantity available
                 $q_max = $q_max - $q_alpha;
                 break;
